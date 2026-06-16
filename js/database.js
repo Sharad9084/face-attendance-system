@@ -147,6 +147,8 @@ class Database {
       return { alreadyMarked: true, record: existing };
     }
 
+    const status = await this.getAttendanceStatus(now);
+
     const record = {
       userId,
       userName,
@@ -154,7 +156,7 @@ class Database {
       date: dateStr,
       time: timeStr,
       timestamp: now.toISOString(),
-      status: this.getAttendanceStatus(now)
+      status
     };
 
     return new Promise((resolve, reject) => {
@@ -169,12 +171,16 @@ class Database {
     });
   }
 
-  getAttendanceStatus(date) {
+  async getAttendanceStatus(date) {
     const hours = date.getHours();
     const minutes = date.getMinutes();
     const totalMinutes = hours * 60 + minutes;
-    // Default: late after 9:30 AM (570 minutes)
-    const lateThreshold = 570;
+    
+    // Default: 09:30 (570 minutes)
+    const lateTimeStr = await this.getSetting('lateThresholdTime', '09:30');
+    const [tHours, tMinutes] = lateTimeStr.split(':').map(Number);
+    const lateThreshold = tHours * 60 + tMinutes;
+    
     return totalMinutes > lateThreshold ? 'late' : 'present';
   }
 

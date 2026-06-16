@@ -177,6 +177,16 @@ class App {
       db.setSetting('confidenceThreshold', val / 100);
     });
 
+    document.getElementById('setting-late-time')?.addEventListener('change', async (e) => {
+      const val = e.target.value;
+      await db.setSetting('lateThresholdTime', val);
+      const [h, m] = val.split(':').map(Number);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const displayH = h % 12 || 12;
+      const displayM = m < 10 ? '0' + m : m;
+      showToast(`Late threshold updated to ${displayH}:${displayM} ${ampm}`, 'success');
+    });
+
     document.getElementById('btn-export-data')?.addEventListener('click', () => this.exportBackup());
     document.getElementById('btn-import-data')?.addEventListener('click', () => document.getElementById('import-file-input').click());
     document.getElementById('import-file-input')?.addEventListener('change', (e) => this.importBackup(e));
@@ -525,6 +535,13 @@ class App {
     if (slider) {
       slider.value = threshold * 100;
       document.getElementById('threshold-value').textContent = Math.round(threshold * 100) + '%';
+    }
+
+    // Load late threshold time
+    const lateTime = await db.getSetting('lateThresholdTime', '09:30');
+    const lateTimeInput = document.getElementById('setting-late-time');
+    if (lateTimeInput) {
+      lateTimeInput.value = lateTime;
     }
 
     // Load camera list
