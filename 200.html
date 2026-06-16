@@ -51,7 +51,7 @@
     <section id="page-home" class="page-section active">
       <div class="home-hero">
         <h2>Face Attendance System</h2>
-        <p>AI-powered facial recognition se attendance mark karo — fast, accurate aur contactless</p>
+        <p>Mark attendance using AI-powered facial recognition — fast, accurate, and contactless</p>
         <div class="btn-group" style="justify-content:center;">
           <button class="btn btn-primary btn-lg" onclick="app.navigateTo('attendance')">📸 Start Attendance</button>
           <button class="btn btn-secondary btn-lg" onclick="app.navigateTo('register')">👤 Register New Face</button>
@@ -95,22 +95,22 @@
         <div class="feature-card" data-navigate="attendance">
           <div class="feature-icon purple">📸</div>
           <h3>Mark Attendance</h3>
-          <p>Webcam se real-time face detect karke automatic attendance mark karo</p>
+          <p>Real-time face detection via webcam to automatically mark attendance</p>
         </div>
         <div class="feature-card" data-navigate="register">
           <div class="feature-icon cyan">👤</div>
           <h3>Register Face</h3>
-          <p>Naye user ko register karo — naam, ID aur 5 face photos capture karo</p>
+          <p>Register new users by capturing name, ID, and 5 face photos from different angles</p>
         </div>
         <div class="feature-card" data-navigate="dashboard">
           <div class="feature-icon green">📊</div>
           <h3>View Dashboard</h3>
-          <p>Attendance records dekho, date-wise filter karo, CSV export karo</p>
+          <p>View attendance records, filter by date, and export reports to CSV</p>
         </div>
         <div class="feature-card" data-navigate="settings">
           <div class="feature-icon amber">⚙️</div>
           <h3>Settings</h3>
-          <p>Confidence threshold, camera selection, data backup/restore</p>
+          <p>Configure confidence threshold, camera source, and data backups</p>
         </div>
       </div>
     </section>
@@ -121,7 +121,7 @@
     <section id="page-attendance" class="page-section">
       <div class="page-header">
         <h2>📸 Mark Attendance</h2>
-        <p>Camera start karo aur registered face dikhao — attendance automatic mark hogi</p>
+        <p>Start the camera and show your registered face to automatically mark attendance</p>
       </div>
 
       <div class="camera-container">
@@ -179,7 +179,7 @@
     <section id="page-register" class="page-section">
       <div class="page-header">
         <h2>👤 Register New User</h2>
-        <p>User details enter karo aur 5 face photos capture karo different angles se</p>
+        <p>Enter user details and capture 5 face photos from different angles</p>
       </div>
 
       <div class="register-layout">
@@ -244,11 +244,11 @@
             <div class="glass-card" style="background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.2);padding:1rem;">
               <h4 style="font-size:0.9rem;margin-bottom:0.5rem;">📋 Instructions</h4>
               <ul style="font-size:0.82rem;color:var(--text-secondary);list-style:none;display:flex;flex-direction:column;gap:6px;">
-                <li>1️⃣ Name aur ID enter karo</li>
-                <li>2️⃣ "Start Camera" click karo</li>
-                <li>3️⃣ Seedha dekho → "Capture Face" click karo</li>
-                <li>4️⃣ Thoda left/right/up/down turn karke 4 aur photos lo</li>
-                <li>5️⃣ "Save & Register" click karo</li>
+                <li>1️⃣ Enter name and User ID</li>
+                <li>2️⃣ Click "Start Camera"</li>
+                <li>3️⃣ Look straight and click "Capture Face"</li>
+                <li>4️⃣ Turn head slightly (left, right, up, down) for 4 more captures</li>
+                <li>5️⃣ Click "Save & Register" to complete</li>
               </ul>
             </div>
           </div>
@@ -262,7 +262,7 @@
     <section id="page-dashboard" class="page-section">
       <div class="page-header">
         <h2>📊 Attendance Dashboard</h2>
-        <p>Date-wise attendance records dekho, search karo aur CSV export karo</p>
+        <p>View date-wise attendance records, search logs, and export to CSV</p>
       </div>
 
       <!-- Stats -->
@@ -334,7 +334,7 @@
     <section id="page-users" class="page-section">
       <div class="page-header">
         <h2>👥 Registered Users</h2>
-        <p>System mein registered sabhi users ki list</p>
+        <p>List of all registered users in the system</p>
       </div>
 
       <div id="users-grid" class="users-grid"></div>
@@ -353,7 +353,7 @@
     <section id="page-settings" class="page-section">
       <div class="page-header">
         <h2>⚙️ Settings</h2>
-        <p>System settings configure karo</p>
+        <p>Configure system preferences and storage settings</p>
       </div>
 
       <div class="settings-grid">
@@ -364,7 +364,7 @@
           <div class="setting-item">
             <div class="setting-label">
               <h4>Confidence Threshold</h4>
-              <p>Kitna accurate face match hona chahiye</p>
+              <p>Minimum match percentage required to recognize a face</p>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
               <input type="range" id="setting-threshold" min="30" max="90" value="60">
@@ -375,7 +375,7 @@
           <div class="setting-item">
             <div class="setting-label">
               <h4>Camera Selection</h4>
-              <p>Konsa camera use karna hai</p>
+              <p>Select which camera source to use</p>
             </div>
             <select id="setting-camera" class="form-control" style="width:auto;max-width:200px;">
               <option>Default Camera</option>
@@ -390,7 +390,7 @@
           <div class="setting-item">
             <div class="setting-label">
               <h4>Total Registered Users</h4>
-              <p>System mein kitne users hain</p>
+              <p>Total number of users registered in local database</p>
             </div>
             <span id="settings-total-users" style="font-size:1.3rem;font-weight:700;color:var(--accent-purple);">0</span>
           </div>
@@ -398,7 +398,7 @@
           <div class="setting-item">
             <div class="setting-label">
               <h4>Total Attendance Records</h4>
-              <p>Ab tak kitne attendance records hain</p>
+              <p>Total attendance logs captured on this device</p>
             </div>
             <span id="settings-total-records" style="font-size:1.3rem;font-weight:700;color:var(--accent-cyan);">0</span>
           </div>
