@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Face Attendance System — Mark attendance using facial recognition. Real-time face detection powered by AI.">
+  <title>Face Attendance System — AI Powered</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+</head>
+<body>
+
+  <!-- ═══════════════ Loading Overlay ═══════════════ -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner" style="width:50px;height:50px;border-width:4px;"></div>
+    <p id="loading-text" class="loading-text">Initializing Face Recognition...</p>
+    <div class="loading-progress"><div class="loading-progress-bar"></div></div>
+  </div>
+
+  <!-- ═══════════════ Toast Container ═══════════════ -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ═══════════════ Navigation ═══════════════ -->
+  <nav class="navbar">
+    <a href="#" class="navbar-brand" onclick="app.navigateTo('home');return false;">
+      <div class="logo-icon">🎯</div>
+      <div>
+        <h1>FaceAttend</h1>
+        <span class="subtitle">AI Attendance System</span>
+      </div>
+    </a>
+
+    <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">☰</button>
+
+    <ul class="nav-links">
+      <li><a href="#" data-page="home" class="active"><span class="nav-icon">🏠</span> Home</a></li>
+      <li><a href="#" data-page="attendance"><span class="nav-icon">📸</span> Attendance</a></li>
+      <li><a href="#" data-page="register"><span class="nav-icon">👤</span> Register</a></li>
+      <li><a href="#" data-page="dashboard"><span class="nav-icon">📊</span> Dashboard</a></li>
+      <li><a href="#" data-page="users"><span class="nav-icon">👥</span> Users</a></li>
+      <li><a href="#" data-page="settings"><span class="nav-icon">⚙️</span> Settings</a></li>
+    </ul>
+  </nav>
+
+  <!-- ═══════════════ Main Content ═══════════════ -->
+  <main class="main-content">
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║          HOME PAGE                   ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <section id="page-home" class="page-section active">
+      <div class="home-hero">
+        <h2>Face Attendance System</h2>
+        <p>AI-powered facial recognition se attendance mark karo — fast, accurate aur contactless</p>
+        <div class="btn-group" style="justify-content:center;">
+          <button class="btn btn-primary btn-lg" onclick="app.navigateTo('attendance')">📸 Start Attendance</button>
+          <button class="btn btn-secondary btn-lg" onclick="app.navigateTo('register')">👤 Register New Face</button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card purple">
+          <div class="stat-icon purple">👥</div>
+          <div class="stat-info">
+            <h3 id="stat-total-users">0</h3>
+            <p>Registered Users</p>
+          </div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon green">✅</div>
+          <div class="stat-info">
+            <h3 id="stat-today-present">0</h3>
+            <p>Present Today</p>
+          </div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-icon cyan">⏱️</div>
+          <div class="stat-info">
+            <h3 id="stat-on-time">0</h3>
+            <p>On Time</p>
+          </div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon amber">⏰</div>
+          <div class="stat-info">
+            <h3 id="stat-late">0</h3>
+            <p>Late Arrivals</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Cards -->
+      <div class="feature-grid">
+        <div class="feature-card" data-navigate="attendance">
+          <div class="feature-icon purple">📸</div>
+          <h3>Mark Attendance</h3>
+          <p>Webcam se real-time face detect karke automatic attendance mark karo</p>
+        </div>
+        <div class="feature-card" data-navigate="register">
+          <div class="feature-icon cyan">👤</div>
+          <h3>Register Face</h3>
+          <p>Naye user ko register karo — naam, ID aur 5 face photos capture karo</p>
+        </div>
+        <div class="feature-card" data-navigate="dashboard">
+          <div class="feature-icon green">📊</div>
+          <h3>View Dashboard</h3>
+          <p>Attendance records dekho, date-wise filter karo, CSV export karo</p>
+        </div>
+        <div class="feature-card" data-navigate="settings">
+          <div class="feature-icon amber">⚙️</div>
+          <h3>Settings</h3>
+          <p>Confidence threshold, camera selection, data backup/restore</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║       ATTENDANCE PAGE                ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <section id="page-attendance" class="page-section">
+      <div class="page-header">
+        <h2>📸 Mark Attendance</h2>
+        <p>Camera start karo aur registered face dikhao — attendance automatic mark hogi</p>
+      </div>
+
+      <div class="camera-container">
+        <!-- Camera Feed -->
+        <div class="glass-card" style="padding:0;overflow:hidden;">
+          <div class="camera-feed" id="attendance-camera-feed">
+            <video id="attendance-video" autoplay muted playsinline></video>
+            <canvas id="attendance-canvas" class="overlay-canvas"></canvas>
+            <div id="attendance-placeholder" class="camera-placeholder">
+              <span class="cam-icon">📷</span>
+              <p>Camera is off</p>
+              <p style="font-size:0.8rem;color:var(--text-muted);">Click "Start Camera" to begin</p>
+            </div>
+            <div id="camera-status-attendance" class="camera-status inactive">
+              <span class="status-dot"></span> OFF
+            </div>
+          </div>
+          <div style="padding:1rem;display:flex;gap:0.75rem;">
+            <button id="btn-start-attendance" class="btn btn-primary">
+              ▶️ Start Camera
+            </button>
+            <button id="btn-stop-attendance" class="btn btn-danger" style="display:none;">
+              ⏹️ Stop Camera
+            </button>
+          </div>
+        </div>
+
+        <!-- Recognition Result + Recent List -->
+        <div class="recognition-panel">
+          <div id="recognition-result">
+            <div class="result-card">
+              <div class="result-icon">👀</div>
+              <h3>Waiting for Face</h3>
+              <p class="result-detail">Position your face in front of the camera</p>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <h3 style="font-size:1rem;margin-bottom:1rem;display:flex;align-items:center;gap:8px;">
+              🕐 Recent Attendance (Today)
+            </h3>
+            <div id="recent-attendance-list" class="recent-list">
+              <div class="empty-state" style="padding:1.5rem;">
+                <p style="color:var(--text-muted);font-size:0.85rem;">No attendance marked yet today</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║       REGISTER PAGE                  ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <section id="page-register" class="page-section">
+      <div class="page-header">
+        <h2>👤 Register New User</h2>
+        <p>User details enter karo aur 5 face photos capture karo different angles se</p>
+      </div>
+
+      <div class="register-layout">
+        <!-- Form & Capture -->
+        <div class="glass-card">
+          <h3 style="font-size:1.1rem;margin-bottom:1.25rem;">User Details</h3>
+          <div class="form-group">
+            <label for="reg-name">Full Name *</label>
+            <input type="text" id="reg-name" class="form-control" placeholder="e.g. Rahul Sharma">
+          </div>
+          <div class="form-group">
+            <label for="reg-id">User ID *</label>
+            <input type="text" id="reg-id" class="form-control" placeholder="e.g. EMP001">
+          </div>
+          <div class="form-group">
+            <label for="reg-department">Department</label>
+            <input type="text" id="reg-department" class="form-control" placeholder="e.g. Engineering">
+          </div>
+          <div class="btn-group">
+            <button id="btn-start-register" class="btn btn-primary">📷 Start Camera</button>
+            <button id="btn-capture-face" class="btn btn-success" disabled>📸 Capture Face</button>
+          </div>
+
+          <!-- Capture Progress -->
+          <div class="capture-progress" style="margin-top:1.25rem;">
+            <div class="progress-bar">
+              <div id="capture-progress-fill" class="progress-fill" style="width:0%"></div>
+            </div>
+            <span id="capture-progress-text" class="progress-text">0/5</span>
+          </div>
+
+          <!-- Capture Slots -->
+          <div class="capture-grid">
+            <div class="capture-slot" id="capture-slot-1"><span class="slot-number">1</span></div>
+            <div class="capture-slot" id="capture-slot-2"><span class="slot-number">2</span></div>
+            <div class="capture-slot" id="capture-slot-3"><span class="slot-number">3</span></div>
+            <div class="capture-slot" id="capture-slot-4"><span class="slot-number">4</span></div>
+            <div class="capture-slot" id="capture-slot-5"><span class="slot-number">5</span></div>
+          </div>
+
+          <div class="btn-group" style="margin-top:1.25rem;">
+            <button id="btn-save-registration" class="btn btn-primary" disabled>💾 Save & Register</button>
+            <button id="btn-reset-registration" class="btn btn-secondary">🔄 Reset</button>
+          </div>
+        </div>
+
+        <!-- Camera Preview -->
+        <div class="glass-card" style="padding:0;overflow:hidden;">
+          <div class="camera-feed">
+            <video id="register-video" autoplay muted playsinline></video>
+            <div id="register-placeholder" class="camera-placeholder">
+              <span class="cam-icon">📷</span>
+              <p>Fill details & start camera</p>
+              <p style="font-size:0.8rem;color:var(--text-muted);">Camera will open here</p>
+            </div>
+            <div id="camera-status-register" class="camera-status inactive">
+              <span class="status-dot"></span> OFF
+            </div>
+          </div>
+
+          <div style="padding:1.5rem;">
+            <div class="glass-card" style="background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.2);padding:1rem;">
+              <h4 style="font-size:0.9rem;margin-bottom:0.5rem;">📋 Instructions</h4>
+              <ul style="font-size:0.82rem;color:var(--text-secondary);list-style:none;display:flex;flex-direction:column;gap:6px;">
+                <li>1️⃣ Name aur ID enter karo</li>
+                <li>2️⃣ "Start Camera" click karo</li>
+                <li>3️⃣ Seedha dekho → "Capture Face" click karo</li>
+                <li>4️⃣ Thoda left/right/up/down turn karke 4 aur photos lo</li>
+                <li>5️⃣ "Save & Register" click karo</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║       DASHBOARD PAGE                 ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <section id="page-dashboard" class="page-section">
+      <div class="page-header">
+        <h2>📊 Attendance Dashboard</h2>
+        <p>Date-wise attendance records dekho, search karo aur CSV export karo</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card purple">
+          <div class="stat-icon purple">👥</div>
+          <div class="stat-info">
+            <h3 id="dash-total-users">0</h3>
+            <p>Registered Users</p>
+          </div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon green">✅</div>
+          <div class="stat-info">
+            <h3 id="dash-today-present">0</h3>
+            <p>Present Today</p>
+          </div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-icon cyan">⏱️</div>
+          <div class="stat-info">
+            <h3 id="dash-on-time">0</h3>
+            <p>On Time</p>
+          </div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon amber">⏰</div>
+          <div class="stat-info">
+            <h3 id="dash-late">0</h3>
+            <p>Late Arrivals</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <input type="date" id="filter-date" class="form-control">
+        <input type="text" id="filter-search" class="form-control" placeholder="🔍 Search by name, ID, department...">
+        <button id="btn-export-csv" class="btn btn-success btn-sm">📥 Export CSV</button>
+      </div>
+
+      <!-- Table -->
+      <div class="glass-card" style="padding:0;">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Department</th>
+                <th>Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-table-body">
+            </tbody>
+          </table>
+        </div>
+        <div id="attendance-empty" class="empty-state" style="display:block;">
+          <div class="empty-icon">📋</div>
+          <h3>No Records Found</h3>
+          <p>Select a date to view attendance records</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║       USERS PAGE                     ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <section id="page-users" class="page-section">
+      <div class="page-header">
+        <h2>👥 Registered Users</h2>
+        <p>System mein registered sabhi users ki list</p>
+      </div>
+
+      <div id="users-grid" class="users-grid"></div>
+
+      <div id="users-empty" class="empty-state glass-card" style="display:block;">
+        <div class="empty-icon">👤</div>
+        <h3>No Users Registered</h3>
+        <p>Go to "Register" page to add new users</p>
+        <button class="btn btn-primary" style="margin-top:1rem;" onclick="app.navigateTo('register')">👤 Register New User</button>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║       SETTINGS PAGE                  ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <section id="page-settings" class="page-section">
+      <div class="page-header">
+        <h2>⚙️ Settings</h2>
+        <p>System settings configure karo</p>
+      </div>
+
+      <div class="settings-grid">
+        <!-- Recognition Settings -->
+        <div class="glass-card">
+          <h3 style="font-size:1.1rem;margin-bottom:1.25rem;">🎯 Recognition Settings</h3>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Confidence Threshold</h4>
+              <p>Kitna accurate face match hona chahiye</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="range" id="setting-threshold" min="30" max="90" value="60">
+              <span id="threshold-value" style="font-weight:700;min-width:40px;text-align:right;">60%</span>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Camera Selection</h4>
+              <p>Konsa camera use karna hai</p>
+            </div>
+            <select id="setting-camera" class="form-control" style="width:auto;max-width:200px;">
+              <option>Default Camera</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="glass-card">
+          <h3 style="font-size:1.1rem;margin-bottom:1.25rem;">💾 Data Management</h3>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Total Registered Users</h4>
+              <p>System mein kitne users hain</p>
+            </div>
+            <span id="settings-total-users" style="font-size:1.3rem;font-weight:700;color:var(--accent-purple);">0</span>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Total Attendance Records</h4>
+              <p>Ab tak kitne attendance records hain</p>
+            </div>
+            <span id="settings-total-records" style="font-size:1.3rem;font-weight:700;color:var(--accent-cyan);">0</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;">
+            <button id="btn-export-data" class="btn btn-success btn-block">📦 Export Backup (JSON)</button>
+            <button id="btn-import-data" class="btn btn-secondary btn-block">📂 Import Backup</button>
+            <input type="file" id="import-file-input" accept=".json" style="display:none;">
+            <button id="btn-clear-attendance" class="btn btn-danger btn-block">🗑️ Clear All Attendance</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════ Scripts ═══════════════ -->
+  <!-- face-api.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+
+  <!-- App Modules -->
+  <script src="js/utils.js"></script>
+  <script src="js/database.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/faceRecognition.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
